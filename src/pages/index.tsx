@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import io from 'socket.io-client'
-const socket = io('http://localhost:3000')
+import io, { Socket } from 'socket.io-client'
+import { Textarea } from '../components/Textarea'
+
+const socket: Socket = io('http://localhost:3000')
 
 type Chat = {
   message: string
 }
 
 export default function Home() {
-  const [text, setText] = useState('')
   const [newChat, setNewChat] = useState<Chat>()
   const [chats, setChats] = useState<Chat[]>([])
 
@@ -29,33 +30,32 @@ export default function Home() {
 
   useEffect(() => {
     if (newChat?.message) {
-      setChats([...chats, newChat])
+      setChats([newChat, ...chats])
     }
   }, [newChat])
 
-  const submit = () => {
-    socket.emit('msgToServer', { message: text })
-    setText('')
-    console.log('submit')
-  }
-
   return (
-    <div>
-      <textarea
-        value={text}
-        className="border w-96"
-        onChange={(e) => setText(e.target.value)}
-      ></textarea>
-      <button
-        className="bg-blue-500 h-8 w-20 mx-auto rounded-md text-center"
-        onClick={submit}
-      >
-        submit
-      </button>
-
-      {chats.map((chat, idx) => {
-        return <p key={idx + chat.message}>{chat.message}</p>
-      })}
+    <div className=" w-2/3 mx-auto">
+      <h1 className="text-3xl my-10">Chat</h1>
+      <Textarea socket={socket} />
+      <ul role="list" className="divide-y divide-gray-20 ">
+        {chats.map((chat, idx) => {
+          return (
+            <li key={idx} className="px-4 py-4 sm:px-6 flex">
+              <span className="inline-block h-10 w-10 mr-4 rounded-full overflow-hidden bg-gray-100">
+                <svg
+                  className="h-full w-full text-gray-300"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </span>
+              <p className="w-full h-10">{chat.message}</p>
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }
