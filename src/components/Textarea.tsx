@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useContext, useState } from 'react'
 import {
   EmojiHappyIcon,
   EmojiSadIcon,
@@ -9,7 +9,7 @@ import {
   XIcon
 } from '@heroicons/react/solid'
 import { Listbox, Transition } from '@headlessui/react'
-import { Socket } from 'socket.io-client'
+import { SocketContext } from '../lib/Socket'
 
 const moods = [
   {
@@ -60,15 +60,16 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 type Props = {
-  socket: Socket
+  room: string
 }
 
 export const Textarea = (props: Props) => {
+  const socket = useContext(SocketContext)
   const [text, setText] = useState<string>('')
   const [selected, setSelected] = useState(moods[5])
 
   const submit = () => {
-    props.socket.emit('msgToServer', { message: text, room: 'testroom' })
+    socket.emit('msgToServer', { message: text, room: props.room })
     setText('')
     console.log('submit!')
   }
@@ -87,15 +88,14 @@ export const Textarea = (props: Props) => {
         </span>
       </div>
       <div className="min-w-0 flex-1">
-        <form action="#" className="relative">
-          <div className="border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+        <div className="relative">
+          <div className="border border-gray-300 rounded-lg shadow-sm overflow-hidden ">
             <label htmlFor="comment" className="sr-only">
               Add your comment
             </label>
             <textarea
               value={text}
               rows={3}
-              name="comment"
               id="comment"
               className="block w-full p-3 border-0 resize-none focus:ring-0 sm:text-sm"
               placeholder="Add your comment..."
@@ -103,9 +103,7 @@ export const Textarea = (props: Props) => {
               onChange={(e) => setText(e.target.value)}
             />
 
-            {/* Spacer element to match the height of the toolbar */}
             <div className="py-2" aria-hidden="true">
-              {/* Matches height of button in toolbar (1px border + 36px content height) */}
               <div className="py-px">
                 <div className="h-9" />
               </div>
@@ -208,17 +206,15 @@ export const Textarea = (props: Props) => {
                 </Listbox>
               </div>
             </div>
-            <div className="flex-shrink-0">
-              <button
-                type="submit"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={submit}
-              >
-                Post
-              </button>
-            </div>
+            <div className="flex-shrink-0"></div>
+            <button
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={submit}
+            >
+              Post
+            </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   )
