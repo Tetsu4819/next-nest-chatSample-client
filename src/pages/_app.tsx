@@ -14,7 +14,12 @@ function MyApp({ Component, pageProps }) {
 
     socket.on('joinedRoom', (data) => {
       const room = data.room
-      room && router.push({ pathname: '/ChatRoom', query: { room: room } })
+      const name = data.name
+      room &&
+        router.push({
+          pathname: '/ChatRoom',
+          query: { room: room, name: name }
+        })
     })
 
     socket.on('disconnect', () => {

@@ -61,15 +61,19 @@ function classNames(...classes) {
 }
 type Props = {
   room: string
+  name: string
 }
 
 export const Textarea = (props: Props) => {
+  const { room, name } = props
   const socket = useContext(SocketContext)
   const [text, setText] = useState<string>('')
   const [selected, setSelected] = useState(moods[5])
 
   const submit = () => {
-    socket.emit('msgToServer', { message: text, room: props.room })
+    const data = { room: room, name: name, message: text }
+    console.log(data)
+    socket.emit('msgToServer', data)
     setText('')
     console.log('submit!')
   }
