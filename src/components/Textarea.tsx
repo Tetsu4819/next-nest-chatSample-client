@@ -68,7 +68,7 @@ export const Textarea = (props: Props) => {
   const [selected, setSelected] = useState(moods[5])
 
   const submit = () => {
-    props.socket.emit('msgToServer', { message: text })
+    props.socket.emit('msgToServer', { message: text, room: 'testroom' })
     setText('')
     console.log('submit!')
   }
